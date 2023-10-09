@@ -11,6 +11,9 @@ class Figure:
     def area(self):
         return 0.0
 
+    def vertexes_number(self):
+        return 0
+
 
 class Void(Figure):
     """ "Hульугольник" """
@@ -24,9 +27,13 @@ class Point(Figure):
 
     def __init__(self, p):
         self.p = p
+        self._vertexes_number = int(R2Point.in_neighbourhood(p))
 
     def add(self, q):
         return self if self.p == q else Segment(self.p, q)
+
+    def vertexes_number(self):
+        return self._vertexes_number
 
 
 class Segment(Figure):
@@ -34,6 +41,8 @@ class Segment(Figure):
 
     def __init__(self, p, q):
         self.p, self.q = p, q
+        self._vertexes_number = (int(R2Point.in_neighbourhood(p)) +
+                                 int(R2Point.in_neighbourhood(q)))
 
     def perimeter(self):
         return 2.0 * self.p.dist(self.q)
@@ -47,6 +56,9 @@ class Segment(Figure):
             return Segment(r, self.q)
         else:
             return self
+
+    def vertexes_number(self):
+        return self._vertexes_number
 
 
 class Polygon(Figure):
@@ -63,12 +75,17 @@ class Polygon(Figure):
             self.points.push_first(c)
         self._perimeter = a.dist(b) + b.dist(c) + c.dist(a)
         self._area = abs(R2Point.area(a, b, c))
+        self._vertexes_number = sum(int(R2Point.in_neighbourhood(p))
+                                    for p in self.points.array)
 
     def perimeter(self):
         return self._perimeter
 
     def area(self):
         return self._area
+
+    def vertexes_number(self):
+        return self._vertexes_number
 
     # добавление новой точки
     def add(self, t):
@@ -82,6 +99,8 @@ class Polygon(Figure):
         # хотя бы одно освещённое ребро есть
         if t.is_light(self.points.last(), self.points.first()):
 
+            self._vertexes_number += int(R2Point.in_neighbourhood(t))
+
             # учёт удаления ребра, соединяющего конец и начало дека
             self._perimeter -= self.points.first().dist(self.points.last())
             self._area += abs(R2Point.area(t,
@@ -91,6 +110,7 @@ class Polygon(Figure):
             # удаление освещённых рёбер из начала дека
             p = self.points.pop_first()
             while t.is_light(p, self.points.first()):
+                self._vertexes_number -= int(R2Point.in_neighbourhood(p))
                 self._perimeter -= p.dist(self.points.first())
                 self._area += abs(R2Point.area(t, p, self.points.first()))
                 p = self.points.pop_first()
@@ -99,6 +119,7 @@ class Polygon(Figure):
             # удаление освещённых рёбер из конца дека
             p = self.points.pop_last()
             while t.is_light(self.points.last(), p):
+                self._vertexes_number -= int(R2Point.in_neighbourhood(p))
                 self._perimeter -= p.dist(self.points.last())
                 self._area += abs(R2Point.area(t, p, self.points.last()))
                 p = self.points.pop_last()

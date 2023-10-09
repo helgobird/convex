@@ -2,12 +2,14 @@ from pytest import approx
 from math import sqrt
 from r2point import R2Point
 from convex import Figure, Void, Point, Segment, Polygon
+from data import Data
 
 
 class TestVoid:
 
     # Инициализация (выполняется для каждого из тестов класса)
     def setup_method(self):
+        Data.set_points(R2Point(0.0, 0.0), R2Point(1.0, 1.0))
         self.f = Void()
 
     # Нульугольник является фигурой
@@ -23,8 +25,13 @@ class TestVoid:
         assert self.f.perimeter() == 0.0
 
     # Площадь нульугольника нулевая
-    def test_аrea(self):
+    def test_area(self):
         assert self.f.area() == 0.0
+
+    # Число вершин, удовлетворяющих условию задачи
+    # у нульугольника нуль
+    def test_vertexes_number(self):
+        assert self.f.vertexes_number() == 0
 
     # При добавлении точки нульугольник превращается в одноугольник
     def test_add(self):
@@ -35,6 +42,7 @@ class TestPoint:
 
     # Инициализация (выполняется для каждого из тестов класса)
     def setup_method(self):
+        Data.set_points(R2Point(0.0, 0.0), R2Point(1.0, 1.0))
         self.f = Point(R2Point(0.0, 0.0))
 
     # Одноугольник является фигурой
@@ -50,8 +58,28 @@ class TestPoint:
         assert self.f.perimeter() == 0.0
 
     # Площадь одноугольника нулевая
-    def test_аrea(self):
+    def test_area(self):
         assert self.f.area() == 0.0
+
+    # self.f лежит в 1-окрестности заданной прямой
+    def test_vertexes_number1(self):
+        assert self.f.vertexes_number() == 1
+
+    # Данная точка не лежит в 1-окрестности заданной прямой
+    def test_vertexes_number2(self):
+        p = Point(R2Point(0.0, 10.0))
+        assert p.vertexes_number() == 0
+
+    # Число вершин в окрестности увеличивается
+    # при добавлении точки, лежащей в 1-окрестности заданной
+    # прямой
+    def test_vertexes_number3(self):
+        assert self.f.add(R2Point(1.0, 1.0)).vertexes_number() == 2
+
+    # Число вершин не изменяется при добавлении точки,
+    # не лежащей в 1-окрестности заданной прямой
+    def test_vertexes_number4(self):
+        assert self.f.add(R2Point(0.0, 10.0)).vertexes_number() == 1
 
     # При добавлении точки одноугольник может не измениться
     def test_add1(self):
@@ -66,6 +94,7 @@ class TestSegment:
 
     # Инициализация (выполняется для каждого из тестов класса)
     def setup_method(self):
+        Data.set_points(R2Point(0.0, 0.0), R2Point(1.0, 1.0))
         self.f = Segment(R2Point(0.0, 0.0), R2Point(1.0, 0.0))
 
     # Двуугольник является фигурой
@@ -81,8 +110,32 @@ class TestSegment:
         assert self.f.perimeter() == approx(2.0)
 
     # Площадь двуугольника нулевая
-    def test_аrea(self):
+    def test_area(self):
         assert self.f.area() == 0.0
+
+    # Число вершин в окрестности заданной прямой у self.f
+    def test_vertexes_number1(self):
+        assert self.f.vertexes_number() == 2
+
+    # Число вершин в окрестности у заданного двуугольника
+    def test_vertexes_number2(self):
+        s = Segment(R2Point(0.0, 10.0), R2Point(10.0, 0.0))
+        assert s.vertexes_number() == 0
+
+    # При добавлении точки не из окрестности число вершин в
+    # окрестности не увеличивается (фигура не изменилась)
+    def test_vertexes_number3(self):
+        assert self.f.add(R2Point(0.5, 0.0)).vertexes_number() == 2
+
+    # При добавлении точки из окрестности число вершин в
+    # окрестности увеличивается
+    def test_vertexes_number4(self):
+        assert self.f.add(R2Point(1.0, 1.0)).vertexes_number() == 3
+
+    # При добавлении точки не из окрестности число вершин в
+    # окрестности не увеличивается (двуугольник стал треугольником)
+    def test_vertexes_number5(self):
+        assert self.f.add(R2Point(0.0, 10.0)).vertexes_number() == 2
 
     # При добавлении точки двуугольник может не измениться
     def test_add1(self):
@@ -93,7 +146,7 @@ class TestSegment:
         assert isinstance(self.f.add(R2Point(2.0, 0.0)), Segment)
 
     # При добавлении точки двуугольник может превратиться в треугольник
-    def test_add2(self):
+    def test_add3(self):
         assert isinstance(self.f.add(R2Point(0.0, 1.0)), Polygon)
 
 
@@ -101,6 +154,7 @@ class TestPolygon:
 
     # Инициализация (выполняется для каждого из тестов класса)
     def setup_method(self):
+        Data.set_points(R2Point(0.0, 0.0), R2Point(1.0, 1.0))
         self.f = Polygon(
             R2Point(
                 0.0, 0.0), R2Point(
@@ -156,9 +210,28 @@ class TestPolygon:
 
     # Изменение площади многоугольника
     #   изначально она равна (неориентированной) площади треугольника
-    def test_аrea1(self):
+    def test_area1(self):
         assert self.f.area() == approx(0.5)
     #   добавление точки может увеличить площадь
 
     def test_area2(self):
         assert self.f.add(R2Point(1.0, 1.0)).area() == approx(1.0)
+
+    # Число вершин в окрестности у данного многоугольника
+    def test_vertexes_number1(self):
+        assert self.f.vertexes_number() == 3
+
+    # При добавлении вершины внутрь выпуклой оболочки
+    # число вершин в окрестности данной прямой не изменяется
+    def test_vertexes_number2(self):
+        assert self.f.add(R2Point(0.25, 0.25)).vertexes_number() == 3
+
+    # При добавлении вершины из окрестности данной прямой
+    # число вершин в окрестности данной прямой увеличивается
+    def test_vertexes_number3(self):
+        assert self.f.add(R2Point(1.0, 1.0)).vertexes_number() == 4
+
+    # При добавлении вершины не из окрестности данной прямой
+    # число вершин в окрестности данной прямой увеличивается
+    def test_vertexes_number4(self):
+        assert self.f.add(R2Point(1.0, 10.0)).vertexes_number() == 3

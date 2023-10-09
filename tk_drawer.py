@@ -1,4 +1,5 @@
 from tkinter import *
+from lines import Line
 
 # Размер окна
 SIZE = 600
@@ -51,6 +52,22 @@ class TkDrawer:
         self.canvas.create_line(x(p), y(p), x(q), y(q), fill="black", width=2)
         self.root.update()
 
+    def draw_neighbourhood(self, p, q):
+        main_points = Line.sketch(p, q).intersection_with_canvas()
+        if len(main_points) != 0:
+            self.canvas.create_line(x(main_points[0]), y(main_points[0]),
+                                    x(main_points[1]), y(main_points[1]),
+                                    fill="red", width=2)
+
+        lines = Line.sketch(p, q).neighbourhood()
+        for line in lines:
+            points = line.intersection_with_canvas()
+            if len(points) != 0:
+                self.canvas.create_line(x(points[0]), y(points[0]),
+                                        x(points[1]), y(points[1]),
+                                        fill="red", width=2, dash=(5, 1))
+        self.root.update()
+
 
 if __name__ == "__main__":
 
@@ -61,4 +78,5 @@ if __name__ == "__main__":
     tk.draw_point(R2Point(2.0, 2.0))
     tk.draw_line(R2Point(0.0, 0.0), R2Point(1.0, 1.0))
     tk.draw_line(R2Point(0.0, 0.0), R2Point(1.0, 0.0))
+    tk.draw_neighbourhood(R2Point(4, -6), R2Point(5, 0))
     time.sleep(5)

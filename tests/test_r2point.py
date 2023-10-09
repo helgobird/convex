@@ -5,6 +5,21 @@ from r2point import R2Point
 
 class TestR2Point:
 
+    # Нулевой элемент имеет норму 0
+    def test_norm1(self):
+        a = R2Point(0.0, 0.0)
+        assert R2Point.norm(a) == 0.0
+
+    # Норма однородна
+    def test_norm2(self):
+        a = R2Point(1.0, 1.0)
+        b = R2Point(2.0, 2.0)
+        assert R2Point.norm(b) == approx(2.0 * R2Point.norm(a))
+
+    def test_norm3(self):
+        a = R2Point(1.0, 1.0)
+        assert R2Point.norm(a) == approx(sqrt(2))
+
     # Расстояние от точки до самой себя равно нулю
     def test_dist1(self):
         a = R2Point(1.0, 1.0)
