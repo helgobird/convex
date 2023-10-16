@@ -12,3 +12,8 @@ class Data:
         if not cls.FIRST_POINT:
             cls.FIRST_POINT = first_point
             cls.SECOND_POINT = second_point
+
+    @classmethod
+    def reset_points(cls):
+        cls.FIRST_POINT = None
+        cls.SECOND_POINT = None

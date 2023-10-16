@@ -37,6 +37,11 @@ class TestVoid:
     def test_add(self):
         assert isinstance(self.f.add(R2Point(0.0, 0.0)), Point)
 
+    # Выполняется по завершении работы каждого теста
+    @classmethod
+    def teardown_method(cls):
+        Data.reset_points()
+
 
 class TestPoint:
 
@@ -88,6 +93,11 @@ class TestPoint:
     # При добавлении точки одноугольник может превратиться в двуугольник
     def test_add2(self):
         assert isinstance(self.f.add(R2Point(1.0, 0.0)), Segment)
+
+    # Выполняется по завершении работы каждого теста
+    @classmethod
+    def teardown_method(cls):
+        Data.reset_points()
 
 
 class TestSegment:
@@ -148,6 +158,11 @@ class TestSegment:
     # При добавлении точки двуугольник может превратиться в треугольник
     def test_add3(self):
         assert isinstance(self.f.add(R2Point(0.0, 1.0)), Polygon)
+
+    # Выполняется по завершении работы каждого теста
+    @classmethod
+    def teardown_method(cls):
+        Data.reset_points()
 
 
 class TestPolygon:
@@ -235,3 +250,8 @@ class TestPolygon:
     # число вершин в окрестности данной прямой увеличивается
     def test_vertexes_number4(self):
         assert self.f.add(R2Point(1.0, 10.0)).vertexes_number() == 3
+
+    # Выполняется по завершении работы каждого теста
+    @classmethod
+    def teardown_method(cls):
+        Data.reset_points()

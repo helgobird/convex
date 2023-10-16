@@ -52,4 +52,5 @@ try:
               f"N = {f.vertexes_number()}\n")
 except (EOFError, KeyboardInterrupt):
     print("\nStop")
+    Data.reset_points()
     tk.close()
