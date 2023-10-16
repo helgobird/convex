@@ -19,3 +19,4 @@ try:
         print()
 except (EOFError, KeyboardInterrupt):
     print("\nStop")
+    Data.reset_points()
